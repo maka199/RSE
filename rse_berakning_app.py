@@ -70,7 +70,7 @@ if submit:
         datum = datum_nasta
 
     df = pd.DataFrame(betalningsplan)
-    total_rse = df["Nuvärde"].sum()
+    total_rse = max(0,df["Nuvärde"].sum())
        
     st.success(f"Totalt RSE: {round(total_rse)} kr")
     st.subheader("Betalningsplan")
