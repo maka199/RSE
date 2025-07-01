@@ -60,7 +60,7 @@ if submit:
         betalningsplan.append({
             "Datum": datum_nasta,
             "Skuld vid start": round(skuld, 2),
-            "Betalning": round(betalning, 2),
+            "Skillnad ränta": round(betalning, 2),
             "Diskonteringsfaktor": round(diskonteringsfaktor, 6),
             "Nuvärde": max(0,round(nuvarde, 2)),
             " ":" "
