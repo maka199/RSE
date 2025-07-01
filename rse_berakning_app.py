@@ -79,7 +79,7 @@ if submit:
     sum_row = {
         "Datum": "Summa",
         "Skuld vid start": "",
-        "Skillnad ränta": df["Betalning"].sum(),
+        "Skillnad ränta": df["Skillnad ränta"].sum(),
         "Diskonteringsfaktor": "",
         "Nuvärde": df["Nuvärde"].sum(),
         " ": ""
