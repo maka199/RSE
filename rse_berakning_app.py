@@ -10,7 +10,7 @@ def days_30_360_european(start_date, end_date):
     return (end_date.year - start_date.year) * 360 + (end_date.month - start_date.month) * 30 + (d2 - d1)
 
 # Streamlit-app
-st.title("Beräkning av RSE (Ränteskillnadsersättning)")
+st.title("Beräkning av Ränteskillnadsersättning from 2025-07-01")
 
 with st.form("rse_form"):
     st.subheader("Inmatning")
@@ -62,7 +62,7 @@ if submit:
             "Skuld vid start": round(skuld, 2),
             "Betalning": round(betalning, 2),
             "Diskonteringsfaktor": round(diskonteringsfaktor, 6),
-            "Nuvärde": round(nuvarde, 2),
+            "Nuvärde": max(0,round(nuvarde, 2)),
             " ":" "
         })
         
@@ -72,14 +72,14 @@ if submit:
     df = pd.DataFrame(betalningsplan)
     total_rse = max(0,df["Nuvärde"].sum())
        
-    st.success(f"Totalt RSE: {round(total_rse)} kr")
-    st.subheader("Betalningsplan")
+    st.success(f"Total RSE: {round(total_rse)} kr")
+    st.subheader("Matris skillnad ränta")
 
     # Lägg till en summeringsrad i DataFrame:n
     sum_row = {
         "Datum": "Summa",
         "Skuld vid start": "",
-        "Betalning": df["Betalning"].sum(),
+        "Skillnad ränta": df["Betalning"].sum(),
         "Diskonteringsfaktor": "",
         "Nuvärde": df["Nuvärde"].sum(),
         " ": ""
@@ -91,5 +91,5 @@ if submit:
     # Export till Excel
     output = BytesIO()
     with pd.ExcelWriter(output, engine='openpyxl') as writer:
-        df.to_excel(writer, index=False, sheet_name="RSE-plan")
-    st.download_button("Ladda ner som Excel", data=output.getvalue(), file_name="rse_plan.xlsx")
+        df.to_excel(writer, index=False, sheet_name="RSE-matris")
+    st.download_button("Ladda ner som Excel", data=output.getvalue(), file_name="rse_2025.xlsx")
