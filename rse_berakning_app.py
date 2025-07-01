@@ -80,7 +80,7 @@ if submit:
         "Datum": "Summa",
         "Skuld vid start": "",
         "Skillnad ränta": df["Skillnad ränta"].sum(),
-        "Diskonteringsfaktor": "",
+        "Disk.faktor": "",
         "Nuvärde": df["Nuvärde"].sum(),
         " ": ""
     }
