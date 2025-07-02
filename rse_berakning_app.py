@@ -85,8 +85,8 @@ if submit:
         " ": ""
     }
     df = pd.concat([df, pd.DataFrame([sum_row])], ignore_index=True)
-
-    st.dataframe(df)
+    if df["Nuvärde"].sum()>0:
+        st.dataframe(df)
 
     # Export till Excel
     output = BytesIO()
