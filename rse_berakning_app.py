@@ -73,7 +73,6 @@ if submit:
     total_rse = max(0,df["Nuvärde"].sum())
        
     st.success(f"Total RSE: {round(total_rse)} kr")
-    st.subheader("Matris skillnad ränta")
 
     # Lägg till en summeringsrad i DataFrame:n
     sum_row = {
@@ -86,6 +85,7 @@ if submit:
     }
     df = pd.concat([df, pd.DataFrame([sum_row])], ignore_index=True)
     if df["Nuvärde"].sum()>0:
+        st.subheader("Matris skillnad ränta")
         st.dataframe(df)
 
     # Export till Excel
