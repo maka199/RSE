@@ -88,8 +88,8 @@ if submit:
         st.subheader("Matris skillnad ränta")
         st.dataframe(df)
 
-    # Export till Excel
-    output = BytesIO()
-    with pd.ExcelWriter(output, engine='openpyxl') as writer:
-        df.to_excel(writer, index=False, sheet_name="RSE-matris")
-    st.download_button("Ladda ner som Excel", data=output.getvalue(), file_name="rse_2025.xlsx")
+        # Export till Excel
+        output = BytesIO()
+        with pd.ExcelWriter(output, engine='openpyxl') as writer:
+            df.to_excel(writer, index=False, sheet_name="RSE-matris")
+        st.download_button("Ladda ner som Excel", data=output.getvalue(), file_name="rse_2025.xlsx")
