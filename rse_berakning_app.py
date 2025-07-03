@@ -101,7 +101,6 @@ if submit:
         "text-align": "left"
     })
 
-    
     if df["Nuvärde"].sum()>0:
         st.subheader("Matris skillnad ränta")
         # Rendera Styler som HTML
