@@ -63,7 +63,7 @@ if submit:
             "Skillnad ränta": round(betalning, 2),
             "Disk.faktor": round(diskonteringsfaktor, 6),
             "Nuvärde": max(0,round(nuvarde, 2)),
-            " ":" "
+            " ":none
         })
         
         skuld = max(0, skuld - amortering)
@@ -91,11 +91,12 @@ if submit:
         "Skillnad ränta": "{:,.2f} kr",
         "Nuvärde": "{:,.2f} kr",
         "Disk.faktor": "{:.6f}"
-    }).set_properties(**{
+    }, na_rep="").set_properties(**{
         "text-align": "right"
     }).set_properties(subset=["Datum"], **{
         "text-align": "left"
     })
+
     
     if df["Nuvärde"].sum()>0:
         st.subheader("Matris skillnad ränta")
