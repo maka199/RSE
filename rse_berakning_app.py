@@ -62,8 +62,7 @@ if submit:
             "Skuld vid start": round(skuld, 2),
             "Skillnad ränta": round(betalning, 2),
             "Disk.faktor": round(diskonteringsfaktor, 6),
-            "Nuvärde": max(0,round(nuvarde, 2)),
-            " ": None
+            "Nuvärde": max(0,round(nuvarde, 2))
         })
         
         skuld = max(0, skuld - amortering)
@@ -80,8 +79,7 @@ if submit:
         "Skuld vid start": "",
         "Skillnad ränta": df["Skillnad ränta"].sum(),
         "Disk.faktor": "",
-        "Nuvärde": df["Nuvärde"].sum(),
-        " ": None
+        "Nuvärde": df["Nuvärde"].sum()
     }
     df = pd.concat([df, pd.DataFrame([sum_row])], ignore_index=True)
     
