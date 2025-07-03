@@ -10,7 +10,7 @@ def days_30_360_european(start_date, end_date):
     return (end_date.year - start_date.year) * 360 + (end_date.month - start_date.month) * 30 + (d2 - d1)
 
 # Streamlit-app
-st.title("Beräkning av Ränteskillnadsersättning from 2025-07-01")
+st.title("Beräkning av Ränteskillnadsersättning (RSE) efter lagändring 2025-07-01")
 
 with st.form("rse_form"):
     st.subheader("Inmatning")
@@ -105,7 +105,7 @@ if submit:
     styler = styler.apply(highlight_sum_row, axis=1)
 
     if df["Nuvärde"].sum()>0:
-        st.subheader("Matris skillnad ränta")
+        st.subheader("Nuvärdesberäkning RSE")
         # Rendera Styler som HTML
         html_table = styler.to_html()
         
