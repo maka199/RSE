@@ -91,13 +91,10 @@ if submit:
     }).set_properties(subset=["Datum"], **{
         "text-align": "left"   # Vänsterjustera datumkolumnen
     })
-
-    # Visa den justerade tabellen
-    st.dataframe(styler)
     
     if df["Nuvärde"].sum()>0:
         st.subheader("Matris skillnad ränta")
-        st.dataframe(df)
+        st.dataframe(styler)
 
         # Export till Excel
         output = BytesIO()
