@@ -100,7 +100,11 @@ if submit:
     
     if df["Nuvärde"].sum()>0:
         st.subheader("Matris skillnad ränta")
-        st.table(styler)
+        # Rendera Styler som HTML
+        html_table = styler.to_html()
+        
+        # Visa tabellen i Streamlit
+        st.markdown(html_table, unsafe_allow_html=True)
 
         # Export till Excel
         output = BytesIO()
