@@ -81,7 +81,7 @@ if submit:
         "Skillnad ränta": df["Skillnad ränta"].sum(),
         "Disk.faktor": "",
         "Nuvärde": df["Nuvärde"].sum(),
-        " ": ""
+        " ": None
     }
     df = pd.concat([df, pd.DataFrame([sum_row])], ignore_index=True)
 
