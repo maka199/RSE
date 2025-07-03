@@ -85,17 +85,17 @@ if submit:
     }
     df = pd.concat([df, pd.DataFrame([sum_row])], ignore_index=True)
 
-# Formatera kolumner med tusentalsavgränsare och decimaler
-styler = df.style.format({
-    "Skuld vid start": "{:,.2f} kr",
-    "Skillnad ränta": "{:,.2f} kr",
-    "Nuvärde": "{:,.2f} kr",
-    "Disk.faktor": "{:.6f}"
-}).set_properties(**{
-    "text-align": "right"
-}).set_properties(subset=["Datum"], **{
-    "text-align": "left"
-})
+    # Formatera kolumner med tusentalsavgränsare och decimaler
+    styler = df.style.format({
+        "Skuld vid start": "{:,.2f} kr",
+        "Skillnad ränta": "{:,.2f} kr",
+        "Nuvärde": "{:,.2f} kr",
+        "Disk.faktor": "{:.6f}"
+    }).set_properties(**{
+        "text-align": "right"
+    }).set_properties(subset=["Datum"], **{
+        "text-align": "left"
+    })
     
     if df["Nuvärde"].sum()>0:
         st.subheader("Matris skillnad ränta")
