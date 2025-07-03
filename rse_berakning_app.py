@@ -98,6 +98,7 @@ if submit:
     }).set_properties(subset=["Datum"], **{
         "text-align": "left"
     })
+    
     def highlight_sum_row(row):
         return ['font-weight: bold' if row["Datum"] == "Summa" else '' for _ in row]
 
