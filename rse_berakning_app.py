@@ -84,6 +84,10 @@ if submit:
         " ": None
     }
     df = pd.concat([df, pd.DataFrame([sum_row])], ignore_index=True)
+    
+    # Säkerställ att alla icke-numeriska värden i numeriska kolumner är None
+    for col in ["Skuld vid start", "Skillnad ränta", "Disk.faktor", "Nuvärde"]:
+        df[col] = pd.to_numeric(df[col], errors="coerce")
 
     # Formatera kolumner med tusentalsavgränsare och decimaler
     styler = df.style.format({
