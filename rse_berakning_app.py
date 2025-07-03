@@ -63,7 +63,7 @@ if submit:
             "Skillnad ränta": round(betalning, 2),
             "Disk.faktor": round(diskonteringsfaktor, 6),
             "Nuvärde": max(0,round(nuvarde, 2)),
-            " ":none
+            " ": None
         })
         
         skuld = max(0, skuld - amortering)
