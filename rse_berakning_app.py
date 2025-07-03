@@ -98,6 +98,10 @@ if submit:
     }).set_properties(subset=["Datum"], **{
         "text-align": "left"
     })
+    def highlight_sum_row(row):
+        return ['font-weight: bold' if row["Datum"] == "Summa" else '' for _ in row]
+
+    styler = styler.apply(highlight_sum_row, axis=1)
 
     if df["Nuvärde"].sum()>0:
         st.subheader("Matris skillnad ränta")
