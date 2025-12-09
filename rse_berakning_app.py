@@ -15,9 +15,11 @@ st.title("Beräkning av Ränteskillnadsersättning (RSE) efter lagändring 2025-
 with st.form("rse_form"):
     st.subheader("Inmatning")
     losendag = st.date_input("Lösendag (start för beräkning)", datetime.date.today())
+    senaste_ffd = st.date_input("Senaste ffd", datetime.date.today() - datetime.timedelta(days=30))
     slutbetdag = st.date_input("Slutbetdag (förfallodag)", datetime.date.today() + datetime.timedelta(days=365))
     skuld_start = st.number_input("Låneskuld vid lösendag", min_value=0.0, value=1_000_000.0, step=10000.0)
     amortering = st.number_input("Amortering per period", min_value=0.0, value=0.0, step=1000.0)
+    kundranta = st.number_input("Kundränta (%)", min_value=0.0, value=3.0, step=0.1) / 100
     egen_startranta = st.number_input("Egen startränta (%)", min_value=0.0, value=3.0, step=0.1) / 100
     egen_jamforranta = st.number_input("Egen jämförränta (%)", min_value=0.0, value=2.0, step=0.1) / 100
     frekvens = st.selectbox("Betalningsfrekvens", ["Månad", "Kvartal", "År"])
@@ -35,17 +37,28 @@ if submit:
     betalningsplan = []
     datum = losendag
     skuld = skuld_start
+    
+    # Beräkna första förfallodagen baserat på senaste_ffd
+    if senaste_ffd.month + steg > 12:
+        ny_manad = (senaste_ffd.month + steg) % 12
+        ny_ar = senaste_ffd.year + (senaste_ffd.month + steg - 1) // 12
+    else:
+        ny_manad = senaste_ffd.month + steg
+        ny_ar = senaste_ffd.year
+    forsta_ffd = datetime.date(ny_ar, ny_manad, senaste_ffd.day)
+    
+    # Använd första_ffd som bas för att beräkna alla förfallodagar
+    ffd_referens = senaste_ffd
 
     while datum < slutbetdag and skuld > 0:
-        # Nästa betalningsdatum
-        if datum.month + steg > 12:
-            ny_manad = (datum.month + steg) % 12
-            ny_ar = datum.year + (datum.month + steg - 1) // 12
+        # Beräkna nästa förfallodag baserat på senaste_ffd och periodsteg
+        if ffd_referens.month + steg > 12:
+            ny_manad = (ffd_referens.month + steg) % 12
+            ny_ar = ffd_referens.year + (ffd_referens.month + steg - 1) // 12
         else:
-            ny_manad = datum.month + steg
-            ny_ar = datum.year
-        ny_dag = min(datum.day, 28)  # undvik problem med t.ex. 31 februari
-        datum_nasta = datetime.date(ny_ar, ny_manad, ny_dag)
+            ny_manad = ffd_referens.month + steg
+            ny_ar = ffd_referens.year
+        datum_nasta = datetime.date(ny_ar, ny_manad, ffd_referens.day)
 
         if datum_nasta > slutbetdag:
             datum_nasta = slutbetdag
@@ -67,11 +80,20 @@ if submit:
         
         skuld = max(0, skuld - amortering)
         datum = datum_nasta
+        ffd_referens = datum_nasta
 
     df = pd.DataFrame(betalningsplan)
     total_rse = max(0,df["Nuvärde"].sum())
+    
+    # Beräkna upplupen ränta från senaste ffd till lösendag
+    dagar_upplupen = days_30_360_european(senaste_ffd, losendag)
+    upplupen_ranta = kundranta * skuld_start * (dagar_upplupen / 360)
+    
+    totalt_att_betala = total_rse + upplupen_ranta
        
-    st.success(f"Total RSE: {round(total_rse)} kr")
+    st.success(f"Ränteskillnadsersättning: {round(total_rse):,} kr".replace(",", " "))
+    st.info(f"Upplupen ränta för perioden {senaste_ffd.strftime('%Y-%m-%d')} - {losendag.strftime('%Y-%m-%d')}: {round(upplupen_ranta):,} kr".replace(",", " "))
+    st.success(f"**Totalt att betala: {round(totalt_att_betala):,} kr**".replace(",", " "))
 
     # Lägg till en summeringsrad i DataFrame:n
     sum_row = {
