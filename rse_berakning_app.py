@@ -3,6 +3,57 @@ import pandas as pd
 import datetime
 from io import BytesIO
 
+# Hjälpfunktion: parsa tal med svenska tusentalsavgränsare och komma
+def parse_swe_number(text):
+    # Robust parser som hanterar tusentalsavgränsare, decimaler och suffix (k/miljoner)
+    if isinstance(text, (int, float)):
+        return float(text)
+    if text is None:
+        return 0.0
+    s = str(text).lower()
+    # ersätt icke-brytande mellanslag och trim
+    s = s.replace("\u00a0", " ").strip()
+
+    multiplier = 1.0
+    # Hantera vanliga svenska storleks-suffix
+    if any(term in s for term in ["miljon", "miljoner", "m"]):
+        multiplier = 1_000_000.0
+        # ta bort ord/suffix
+        s = s.replace("miljoner", "").replace("miljon", "").replace("m", "")
+    elif any(term in s for term in ["tusen", "k"]):
+        multiplier = 1_000.0
+        s = s.replace("tusen", "").replace("k", "")
+
+    # Ta bort alla bokstäver och andra tecken utom siffror, punkt, komma och minus
+    allowed = set("0123456789.,-")
+    s = "".join(ch for ch in s if ch in allowed)
+
+    # Om både punkt och komma förekommer, anta att komma är decimal och punkt tusen
+    if "," in s and "." in s:
+        s = s.replace(".", "")  # ta bort tusen-punkter
+    # Ta bort mellanslag (om kvar) som tusentalsavgränsare
+    s = s.replace(" ", "")
+    # Ersätt komma med punkt för decimal
+    s = s.replace(",", ".")
+
+    # Om det finns flera punkter, behåll endast den sista som decimalpunkt
+    if s.count(".") > 1:
+        parts = s.split(".")
+        s = "".join(parts[:-1]).replace(".", "") + "." + parts[-1]
+
+    try:
+        return float(s) * multiplier
+    except Exception:
+        return 0.0
+
+# Callback för att formatera skuld-fältet live
+def format_skuld_input():
+    raw = st.session_state.get("skuld_start", "")
+    parsed = parse_swe_number(raw)
+    # Formatera med tusentalsavgränsare, utan decimaler
+    formatted = f"{parsed:,.0f}".replace(",", " ") if parsed else ""
+    st.session_state["skuld_start"] = formatted
+
 # Funktion för europeisk 30/360-dagberäkning
 def days_30_360_european(start_date, end_date):
     d1 = min(start_date.day, 30)
@@ -15,17 +66,28 @@ st.title("Beräkning av Ränteskillnadsersättning (RSE) efter lagändring 2025-
 with st.form("rse_form"):
     st.subheader("Inmatning")
     losendag = st.date_input("Lösendag (start för beräkning)", datetime.date.today())
-    senaste_ffd = st.date_input("Senaste ffd", datetime.date.today() - datetime.timedelta(days=30))
-    slutbetdag = st.date_input("Slutbetdag (förfallodag)", datetime.date.today() + datetime.timedelta(days=365))
-    skuld_start = st.number_input("Låneskuld vid lösendag", min_value=0.0, value=1_000_000.0, step=10000.0)
+    senaste_ffd = st.date_input("Senaste ffd (styr upplupen ränta och framtida betaldagar)", datetime.date(losendag.year, losendag.month, 1))
+    slutbetdag = st.date_input("Slutbetdag (förfallodag)", senaste_ffd + datetime.timedelta(days=365))
+    # Textfält med tusentalsavgränsare (mellanslag) för skuld
+    skuld_start = st.text_input(
+        "Låneskuld vid lösendag",
+        value=f"{1_000_000:,.0f}".replace(",", " "),
+        key="skuld_start",
+        placeholder="Exempel: 1 000 000 eller 1,5 miljoner"
+    )
     amortering = st.number_input("Amortering per period", min_value=0.0, value=0.0, step=1000.0)
     kundranta = st.number_input("Kundränta (%)", min_value=0.0, value=3.0, step=0.1) / 100
-    egen_startranta = st.number_input("Egen startränta (%)", min_value=0.0, value=3.0, step=0.1) / 100
-    egen_jamforranta = st.number_input("Egen jämförränta (%)", min_value=0.0, value=2.0, step=0.1) / 100
+    egen_startranta = st.number_input("Egen startränta (effektivränta, %)", min_value=0.0, value=3.0, step=0.1) / 100
+    egen_jamforranta = st.number_input("Egen jämförränta (effektivränta, %)", min_value=0.0, value=2.0, step=0.1) / 100
     frekvens = st.selectbox("Betalningsfrekvens", ["Månad", "Kvartal", "År"])
     submit = st.form_submit_button("Beräkna RSE")
 
 if submit:
+    # Parsea och validera skuld från textfältet
+    skuld_start = parse_swe_number(skuld_start)
+    if skuld_start < 0:
+        skuld_start = 0.0
+
     # Bestäm periodsteg
     if frekvens == "Månad":
         steg = 1
