@@ -154,7 +154,7 @@ if submit:
     totalt_att_betala = total_rse + upplupen_ranta
        
     st.success(f"Ränteskillnadsersättning: {round(total_rse):,} kr".replace(",", " "))
-    st.info(f"Upplupen ränta för perioden {senaste_ffd.strftime('%Y-%m-%d')} - {losendag.strftime('%Y-%m-%d')}: {round(upplupen_ranta):,} kr".replace(",", " "))
+    st.info(f"Upplupen Kundränta för perioden {senaste_ffd.strftime('%Y-%m-%d')} - {losendag.strftime('%Y-%m-%d')}: {round(upplupen_ranta):,} kr".replace(",", " "))
     st.success(f"**Totalt att betala: {round(totalt_att_betala):,} kr**".replace(",", " "))
 
     # Lägg till en summeringsrad i DataFrame:n
