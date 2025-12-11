@@ -67,7 +67,7 @@ with st.form("rse_form"):
     st.subheader("Inmatning")
     losendag = st.date_input("Lösendag (start för beräkning)", datetime.date.today())
     senaste_ffd = st.date_input("Senaste ffd (styr upplupen ränta och framtida betaldagar)", datetime.date(losendag.year, losendag.month, 1))
-    slutbetdag = st.date_input("Slutbetdag (förfallodag)", senaste_ffd + datetime.timedelta(days=365))
+    slutbetdag = st.date_input("Slutbetdag (förfallodag)", senaste_ffd + datetime.timedelta(days=730))
     # Textfält med tusentalsavgränsare (mellanslag) för skuld
     skuld_start = st.text_input(
         "Låneskuld vid lösendag",
@@ -76,7 +76,7 @@ with st.form("rse_form"):
         placeholder="Exempel: 1 000 000 eller 1,5 miljoner"
     )
     amortering = st.number_input("Amortering per period", min_value=0.0, value=0.0, step=1000.0)
-    kundranta = st.number_input("Kundränta (%)", min_value=0.0, value=3.0, step=0.1) / 100
+    kundranta = st.number_input("Kundränta (%)", min_value=0.0, value=4.0, step=0.1) / 100
     egen_startranta = st.number_input("Egen startränta (effektivränta, %)", min_value=0.0, value=3.0, step=0.1) / 100
     egen_jamforranta = st.number_input("Egen jämförränta (effektivränta, %)", min_value=0.0, value=2.0, step=0.1) / 100
     frekvens = st.selectbox("Betalningsfrekvens", ["Månad", "Kvartal", "År"])
